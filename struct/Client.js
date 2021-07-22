@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const { Client, Collection, User, Guild, Message, GuildMember, Role } = require('discord.js');
 const MessageEmbed = require('./MessageEmbed');
 const helper = require('../util/helper.js');
-const DisTube = require('distube');
 const { readdirSync } = require('fs');
 const fetch = require('node-fetch');
 const { defaultSettings, token } = require('../util/config');
@@ -34,12 +33,6 @@ class KyofuClient extends Client {
      * @type {helper}
      */
     this.helper = helper;
-
-    /**
-     * DisTube.
-     * @type {DisTube}
-     */
-    this.distube = new DisTube(this, { searchSongs: false, emitNewSongOnly: true });
   }
 
   /**
