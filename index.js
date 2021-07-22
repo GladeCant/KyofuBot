@@ -7,10 +7,6 @@ const client = new Client({
 });
 require('./struct/Message.js');
 require('./struct/User.js');
-require('discord-buttons')(client);
-require("@babel/core").transformSync("code", {
-  plugins: ["@babel/plugin-proposal-nullish-coalescing-operator"],
-});
 const { connect } = require('mongoose');
 const { dbconnection, token } = require('./util/config.js');
 
