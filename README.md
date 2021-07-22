@@ -2,9 +2,6 @@
 Kyofu is a french, sexy and a bit melancholic discord bot coded with [discord.js](https://discord.js.org/#/) library.
 It is still in development, especially the RPG. 
 
-#### Note
-> The "Indent changes", "Some changes" or "Some things" commits are from a big update where all the commands have been thoroughly reviewed. 
-
 ## Features
 * **Utility** commands
 * **Fun** commands
