@@ -37,23 +37,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## To do
-* [ ] Change indent spaces to 2 & many little things
-    * [x] Index
-    * [x] Struct
-    * [x] Events
-    * [x] Util
-    * [x] Models
-    * [ ] Commands
-        * [x] Dev 
-        * [x] Config
-        * [x] Moderation 
-        * [x] Utility
-        * [x] Fun
-        * [ ] Social
-        * [ ] Music 
-        * [ ] RPG   
-
 ## Owner
 > <img src='https://cdn.discordapp.com/emojis/812992729797230592.png?v=1' height='15'> Created and owned by [@Cant](https://github.com/GladeCant/).
 
