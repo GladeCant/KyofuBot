@@ -63,7 +63,6 @@ class KyofuClient extends Client {
       for (const file of eventFiles) {
         const event = require(`../events/${folder}/${file}`);
         if (folder === 'client') this.on(file.split('.')[0], event.bind(null, this));
-        if (folder === 'distube') this.distube.on(file.split('.')[0], event.bind(null));
       }
     }
   }
