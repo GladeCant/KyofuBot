@@ -1,12 +1,10 @@
 const { Intents } = require('discord.js');
 const Client =  require('./struct/Client');
-const NekoClient = require('nekos.life');
 const client = new Client({
   ws: {
     intents: [Intents.ALL]
   }
 });
-const neko = new NekoClient();
 require('./struct/Message.js');
 require('./struct/User.js');
 require('discord-buttons')(client);
