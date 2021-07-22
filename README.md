@@ -1,0 +1,2 @@
+# KyofuBot
+A discord bot
