@@ -1,12 +1,12 @@
 const { Intents } = require('discord.js');
+require('./struct/Message.js');
+require('./struct/User.js');
 const Client =  require('./struct/Client');
 const client = new Client({
   ws: {
     intents: [Intents.ALL]
   }
 });
-require('./struct/Message.js');
-require('./struct/User.js');
 const { connect } = require('mongoose');
 const { dbconnection, token } = require('./util/config.js');
 
