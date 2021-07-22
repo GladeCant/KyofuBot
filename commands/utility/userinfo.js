@@ -7,7 +7,7 @@ module.exports = {
   name: 'userinfo',
   aliases: ['ui', 'infouser', 'iu'],
   usage: 'userinfo <membre>',
-  description: "Donne les informations suivantes sur un utilisateur : \n• Pseudo \n• ID \n• Surnom \n• Région \n• Date de création \n• Date d'arrivée sur le serveur\n• Statut de présence \n• Plateforme \n• Dernier message envoyé\n• Date de début de boost (si le membre a boosté le serveur)\n• Rôles",
+  description: "Donne les informations suivantes sur un utilisateur : \n• Pseudo \n• ID \n• Surnom \n• Date de création \n• Date d'arrivée sur le serveur\n• Statut de présence \n• Plateforme \n• Dernier message envoyé\n• Date de début de boost (si le membre a boosté le serveur)\n• Rôles",
   category: 'Utilitaire',
   img: 'https://image.flaticon.com/icons/png/512/4406/4406349.png',
 
