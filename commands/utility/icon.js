@@ -25,7 +25,7 @@ module.exports = {
       .setImage(icon(guild, 'png', true))
       .setTimestamp()
       .setFooter(message.author.tag, message.author.displayAvatarURL({ dynamic: true }))
-      
+
     message.channel.send(embed)
   }
 };
