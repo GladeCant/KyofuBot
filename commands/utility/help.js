@@ -34,7 +34,7 @@ module.exports = {
         .setFooter(`${client.user.username} par ${(await client.fetchApplication()).owner.tag}`, client.user.displayAvatarURL({ dynamic: true }))
 
       Object.keys(commandsList).forEach(key => {
-        embed.addField(`${client._helper('categoriesEmojis', key)} **${key}**`, `> \`${commandsList[key].join('`, `')}\`\n${key === 'Social' ? `\n[Inviter le bot](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands%20identify)` : '\u00AD'}`, false);
+        embed.addField(`${client._helper('categoriesEmojis', key)} **${key}**`, `> \`${commandsList[key].join('`, `')}\`\n${key === 'Social' ? `\n[Inviter le bot](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands%20identify) • [Serveur support](https://discord.gg/NMmqJ3h5s7)` : '\u00AD'}`, false);
       });
 
       message.channel.send(embed);
