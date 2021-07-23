@@ -20,11 +20,16 @@ module.exports = {
 
     const embed = new MessageEmbed()
       .setColor(message.member.roles.highest.color || '')
-      .setDescription(`🖼️ • Icône d${client.helper.vowels.includes(guild.name.toLowerCase()[0]) ? "'" : 'e '}**${guild.name}** :`)
-      .setImage(guild.iconURL({ size: 2048, format: 'png', dynamic: true }))
+      .setTitle(`🖼️ • Icône d${client.helper.vowels.includes(guild.name.toLowerCase()[0]) ? "'" : 'e '}${guild.name} :`)
+      .setDescription(`[webp](${icon(guild, 'webp', false)}) • [png](${icon(guild, 'png', false)}) • [jpg](${icon(guild, 'jpg', false)}) • [jpeg](${icon(guild, 'jpeg', false)})${guild.icon.startsWith('a_') ? ` • [gif](${icon(guild, 'gif', true)})` : ''}`)
+      .setImage(icon(guild, 'png', true))
       .setTimestamp()
       .setFooter(message.author.tag, message.author.displayAvatarURL({ dynamic: true }))
       
     message.channel.send(embed)
   }
 };
+
+function icon(guild, format, bool) {
+  return guild.iconURL({ size: 2048, format: format, dynamic: bool });
+}
