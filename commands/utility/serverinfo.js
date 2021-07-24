@@ -41,11 +41,11 @@ module.exports = {
         { name: 'Création :', value: moment(guild.createdAt).format('DD/MM/YYYY'), inline: true },
         { name: 'Salons', value: `__Textuels__ : ${guild.channels.cache.filter(channel => channel.type === 'text').size}\n __Vocaux__ : ${guild.channels.cache.filter(channel => channel.type === 'voice').size}`, inline: true }
       )
-      .addPotentialField((guild.afkChannel), 'Salon afk', `<#${guild.afkChannelID}> (${secondsToHms(guild.afkTimeout)})`, true)
+      .addPotentialField((guild.afkChannel), 'Salon afk', `<#${guild.afkChannelID}> (${client.helper.secondsToHms(guild.afkTimeout)})`, true)
       .addFields(
         { name: 'Paramètres de notification', value: client._helper('guildNotifications', guild.defaultMessageNotifications), inline: true },
         { name: 'Rôles', value: guild.roles.cache.size, inline: true },
-        { name: 'Boosts', value: `${guild.premiumSubscriptionCount} - Niveau **${guild.premiumTier}**`, inline: true },
+        { name: 'Boosts', value: `${guild.premiumSubscriptionCount}${guild.premiumSubscriptionCount > 0 ? `- Niveau **${guild.premiumTier}**` : ''}`, inline: true },
         { name: 'Emojis', value: `__Normaux__ : ${normalEmojis}\n__Animés__ : ${animatedEmojis}`, inline: true }
       )
       .addPotentialField((guild.vanityURLCode), 'URL', guild.vanityURLCode, true)
@@ -53,19 +53,7 @@ module.exports = {
       .addField('Membres', `${message.guild.members.cache.size} ─ Plus d'informations : \`${prefix}membercount\``, false)
       .setTimestamp()
       .setFooter(message.author.tag, message.author.displayAvatarURL({ dynamic: true }))
-      
+
     message.channel.send(embed);
   }
 };
-
-function secondsToHms(d) {
-  d = parseInt(d);
-  const h = Math.floor(d / 3600);
-  const m = Math.floor(d % 3600 / 60);
-  const s = Math.floor(d % 3600 % 60);
-
-  const hDisplay = h > 0 ? h + 'h' : '';
-  const mDisplay = m > 0 ? m + 'm' : '';
-  const sDisplay = s > 0 ? s + 's' : '';
-  return hDisplay + mDisplay + sDisplay;
-}
