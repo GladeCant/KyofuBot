@@ -22,11 +22,12 @@ class ExtendedMessageEmbed extends MessageEmbed {
    * Potentially set an image.
    * @param {Boolean} condition The condition which determine if image is set
    * @param {String} url The image url
-   * @returns {ExtendedMessageEmbed}
+   * @returns {this}
    */
   setPotentialImage(condition, url) {
-    if (condition) super.setImage(url);
-    return this;
+    console.log(url)
+    if (condition) return super.setImage(url);
+    else return this;
   }
 }
 
