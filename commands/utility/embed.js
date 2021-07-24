@@ -15,19 +15,9 @@ module.exports = {
    */
   execute(client, message, args) {
     if (!args.length) return client.sendHelpPage(this.name, message);
-
     message.delete();
-    const _args = args.slice(0).join(' ').split(' ; ');
 
-    if (_args.length === 1) return message.channel.send({ embed: { description: _args[0] } });
-
-    const embed = new MessageEmbed()
-      .setTitle(_args[0])
-      .setDescription(_args[1])
-
-    if (_args[2] && _args[2].startsWith('http')) embed.setImage(_args[2]);
-    if (_args[2] && _args[2].startsWith('#')) embed.setColor(_args[2]);
-    if (_args[3]) embed.setColor(_args[3] || `#${_args[3]}`);
+    const embed = client.helper.toEmbed(args.join(' '));
 
     message.channel.send(embed);
   }
