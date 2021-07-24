@@ -7,9 +7,7 @@ const Client = require('../../struct/Client');
  * @param {Guild} guild
  */
 module.exports = async (client, guild) => {
-  const options = {
-    prefix: 'k!'
-  };
+  const { defaultSettings: options } = require('../../util/config');
 
   await client.createGuild(guild, options);
 }
