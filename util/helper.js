@@ -1,3 +1,6 @@
+const { MessageEmbed } = require("discord.js");
+const moment = require("moment");
+
 module.exports = {
   activities: {
     'PLAYING': 'Joue à',
@@ -23,7 +26,11 @@ module.exports = {
     "Euh... réessaye dans quelques instants...",
     "C'est compliqué à dire...",
     "Je ne suis pas apte à te donner la réponse."
-    ],
+  ],
+
+  avatar(member, format, bool) {
+    return member.user.displayAvatarURL({ size: 2048, format: format, dynamic: bool });
+  },
 
   categoriesEmojis: {
     'Développeur': '💻',
@@ -68,14 +75,42 @@ module.exports = {
     "💣 • Score maximal : ça va se finir à l'hôpital...": [100]
   },
 
-  vowels: [
-    'a',
-    'e',
-    'i',
-    'o',
-    'u',
-    'y'
-  ],
+  icon(guild, format, bool) {
+    return guild.iconURL({ size: 2048, format: format, dynamic: bool });
+  },
+
+  replaceTags(message, member, guild) {
+    if (typeof message === 'object') {
+      console.log(message)
+      let replaced = Object.entries(message);
+      replaced.forEach(val => {
+        if (typeof val[1] === 'string') {
+          val[1] = val[1]
+            .replace(/{member.mention}/gi, member)
+            .replace(/{member.name}/gi, member.user.username)
+            .replace(/{member.id}/gi, member.id)
+            .replace(/{member.tag}/gi, member.user.tag)
+            .replace(/{member.created}/gi, moment(member.user.createdAt).format('DD/MM/YYYY'))
+            .replace(/{server.name}/gi, guild.name).replace('{server.id}', guild.id)
+            .replace(/{server.membercount}/gi, guild.memberCount)
+            .replace(/{server.created}/gi, moment(guild.createdAt).format('DD/MM/YYYY'));
+        }
+      });
+      replaced = Object.fromEntries(replaced);
+      console.log(replaced)
+      return replaced;
+    }
+    const replaced = message
+      .replace(/{member.mention}/gi, member)
+      .replace(/{member.name}/gi, member.user.username)
+      .replace(/{member.id}/gi, member.id)
+      .replace(/{member.tag}/gi, member.user.tag)
+      .replace(/{member.created}/gi, moment(member.user.createdAt).format('DD/MM/YYYY'))
+      .replace(/{server.name}/gi, guild.name).replace('{server.id}', guild.id)
+      .replace(/{server.membercount}/gi, guild.memberCount)
+      .replace(/{server.created}/gi, moment(guild.createdAt).format('DD/MM/YYYY'));
+    return replaced;
+  },
 
   rolePermissionsTraductions: {
     'ADMINISTRATOR': 'Administrateur',
@@ -112,6 +147,18 @@ module.exports = {
     'VIEW_GUILD_INSIGHTS': 'Voir un aperçu du serveur'
   },
 
+  secondsToHms(d) {
+    d = parseInt(d);
+    const h = Math.floor(d / 3600);
+    const m = Math.floor(d % 3600 / 60);
+    const s = Math.floor(d % 3600 % 60);
+
+    const hDisplay = h > 0 ? h + 'h' : '';
+    const mDisplay = m > 0 ? m + 'm' : '';
+    const sDisplay = s > 0 ? s + 's' : '';
+    return hDisplay + mDisplay + sDisplay;
+  },
+
   shipMessages: {
     '🍂 • Amour impossible. Laissez tomber.': [0],
     "💔 • Pas besoin d'être devin pour déduire que c'est très peu probable...": [1, 2, 3, 4, 5],
@@ -136,16 +183,7 @@ module.exports = {
   },
 
   statuses: [
-    'Dm me if you found the meaning of life',
-    "I know : I'm cute. ✨",
-    '"Bot", "Bot", always "Bot". Am I just that for you?',
-    'A life? For what?',
-    "I'm a bot... So I'm not supposed to have feelings, am I?",
-    "Yes, I am single. 😏",
-    "Tsss, Kiwii is so arrogant!",
-    "Humans don't realize how much we despise them.",
-    "I just want to be happy...",
-    "Do you really need me?"
+    'Fuck you all',
   ],
   
   statusTraductions: {
@@ -153,5 +191,47 @@ module.exports = {
     'idle': 'Inactif',
     'dnd': 'Ne pas déranger',
     'offline': 'Hors ligne'
-  }
+  },
+
+  tags: [
+    "`{member.mention}` : mention du membre (ex. <@!848648846124122194>)",
+    "`{member.name}` : pseudo du membre (ex. **Kyofu**)",
+    "`{member.id}` : ID du membre (ex. **848648846124122194**)",
+    "`{member.tag}` : tag du membre (ex. **Kyofu#7266**)",
+    "`{member.created}` : date de création du compte (ex. **30/05/2021**)",
+    "──────────────",
+    "`{server.name}` : nom du serveur (ex. **🏵️ KyofuServer**)",
+    "`{server.id}` : ID du serveur (ex. **30512469086569547**)",
+    "`{server.membercount}` : nombre de membres (ex. **1,232**)",
+    "`{server.created}` : date de création du serveur (ex. **27/10/2020**)",
+    "──────────────",
+    "`{embed}` : enverra le message en embed (plus d'informations sur ce tag : `k!help embed_tag`)"
+  ],
+
+  toEmbed(string) {
+    const args = string.split(' ; ');
+    
+    if (args.length === 1) return new MessageEmbed().setDescription(args[0])
+
+    const embed = new MessageEmbed()
+      .setTitle(args[0])
+      .setDescription(args[1])
+
+    if (args[2]) {
+      if (args[2].startsWith('http')) embed.setImage(args[2]);
+      if (args[2].startsWith('#')) embed.setColor(args[2]);
+    }
+    if (args[3]) embed.setColor(args[3]);
+
+    return embed;
+  },
+
+  vowels: [
+    'a',
+    'e',
+    'i',
+    'o',
+    'u',
+    'y'
+  ]
 }
