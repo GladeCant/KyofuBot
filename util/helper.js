@@ -183,7 +183,16 @@ module.exports = {
   },
 
   statuses: [
-    'Fuck you all',
+    'Dm me if you found the meaning of life',
+    "I know : I'm cute. ✨",
+    '"Bot", "Bot", always "Bot". Am I just that for you?',
+    'A life? For what?',
+    "I'm a bot... So I'm not supposed to have feelings, am I?",
+    "Yes, I am single. 😏",
+    "Tsss, Kiwii is so arrogant!",
+    "Humans don't realize how much we despise them.",
+    "I just want to be happy...",
+    "Do you really need me?"
   ],
   
   statusTraductions: {
