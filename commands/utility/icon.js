@@ -18,6 +18,8 @@ module.exports = {
     const guild = args.length ? client.guilds.cache.find(g => g.id === args[0] || g.name === args.join(' ')) : message.guild;
     if (!guild) return message.inlineReply("<:unchecked:860839603098877953> • Ce serveur n'existe pas – ou bien je n'y ai pas accès.");
 
+    const { icon } = client.helper;
+
     const embed = new MessageEmbed()
       .setColor(message.member.roles.highest.color || '')
       .setTitle(`🖼️ • Icône d${client.helper.vowels.includes(guild.name.toLowerCase()[0]) ? "'" : 'e '}${guild.name} :`)
@@ -29,7 +31,3 @@ module.exports = {
     message.channel.send(embed)
   }
 };
-
-function icon(guild, format, bool) {
-  return guild.iconURL({ size: 2048, format: format, dynamic: bool });
-}
