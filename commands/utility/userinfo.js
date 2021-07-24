@@ -101,7 +101,7 @@ module.exports = {
       )
       .addPotentialField((member.premiumSince), 'Date de début de boost', moment(member.premiumSince).format('DD/MM/YYYY'), true)
       .addField(`Rôles${rolesList.length ? ` (${member.roles.cache.size - 1})` : ''}`, rolesList.length ? rolesList : '*Aucun*', false)
-      .setPotentialImage((true), user.displayBannerURL({ format: 'png', size: 4096, dynamic: true }))
+      .setPotentialImage((user.banner), user.displayBannerURL({ format: 'png', size: 4096, dynamic: true }))
       .setTimestamp()
       .setFooter(message.author.tag, message.author.displayAvatarURL({ dynamic: true }))
 
