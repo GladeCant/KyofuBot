@@ -63,12 +63,10 @@ module.exports = {
       }
     }
 
-    const userAPI = await client.fetchUserAPI(member.id);
-
     let badges = '';
     let flags = user.flags;
 
-    if (userAPI.public_flags > 0) {
+    if (flags) {
       flags = flags.toArray();
       if (flags.length) {
         flags.forEach(flag => {
@@ -76,7 +74,7 @@ module.exports = {
         });
       }
     }
-    if (member.premiumSince || userAPI.banner || user.avatar.startsWith('a_') || ['253554702858452992'].includes(member.id)) badges += '<:nitro:860870443769266179>';
+    if (member.premiumSince || user.banner || user.avatar.startsWith('a_') || ['253554702858452992'].includes(member.id)) badges += '<:nitro:860870443769266179>';
     if (!badges.length) badges = '*Aucun*';
 
     let rolesList = member.roles.cache.filter(r => r.id !== message.guild.id).sort((A, B) => B.rawPosition - A.rawPosition).array().splice(0, 50);
@@ -103,10 +101,10 @@ module.exports = {
       )
       .addPotentialField((member.premiumSince), 'Date de début de boost', moment(member.premiumSince).format('DD/MM/YYYY'), true)
       .addField(`Rôles${rolesList.length ? ` (${member.roles.cache.size - 1})` : ''}`, rolesList.length ? rolesList : '*Aucun*', false)
-      .setPotentialImage((await user.displayBannerURL()), await user.displayBannerURL({ format: 'png', size: 4096, dynamic: true }))
+      .setPotentialImage((true), user.displayBannerURL({ format: 'png', size: 4096, dynamic: true }))
       .setTimestamp()
       .setFooter(message.author.tag, message.author.displayAvatarURL({ dynamic: true }))
-      
+
     message.channel.send(embed);
   }
 };
