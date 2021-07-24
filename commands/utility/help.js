@@ -15,6 +15,7 @@ module.exports = {
    */
   async execute(client, message, args) {
     const { commands } = client;
+    console.log(commands);
     const commandsList = {};
 
     if (!args.length) {
@@ -36,6 +37,15 @@ module.exports = {
       Object.keys(commandsList).forEach(key => {
         embed.addField(`${client._helper('categoriesEmojis', key)} **${key}**`, `> \`${commandsList[key].join('`, `')}\`\n${key === 'Social' ? `\n[Inviter le bot](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands%20identify) • [Serveur support](https://discord.gg/NMmqJ3h5s7)` : '\u00AD'}`, false);
       });
+
+      message.channel.send(embed);
+    } else if (args[0] === 'embed_tag' || args.join(' ') === 'embed tag') {
+      const { prefix } = await client.getGuild(message.guild);
+
+      const embed = new MessageEmbed()
+        .setColor(message.member.roles.highest.color || '')
+        .setTitle('Le tag {embed}')
+        .setDescription(`Ce tag, mis au tout début d'un message d'arrivée ou de départ, vous permet d'envoyer celui-ci en embed. Il fonctionne comme la commande embed (voir \`${prefix}help embed\`).\n\n__Exemple :__\n\`\`\`${prefix}join message {emmbed} Hey {member.name} ! ; Un nouveau membre vient d'arriver sur {server.name}, bienvenue ! ; https://image.png/ ; #4CF835\`\`\` (Cela marche évidemment de la même manière avec \`leave\`.)`)
 
       message.channel.send(embed);
     } else {
