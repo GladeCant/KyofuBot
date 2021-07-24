@@ -17,6 +17,8 @@ module.exports = {
     const member = args.length ? client.detectMember(message, args) : message.member;
     if (!member) return message.inlineReply('<:unchecked:860839603098877953> • Membre spécifié invalide.');
 
+    const { avatar } = client.helper;
+
     const embed = new MessageEmbed()
       .setColor(member.roles.highest.color || '')
       .setTitle(`📸 • Avatar d${client.helper.vowels.includes(member.user.tag.toLowerCase()[0]) ? "'" : 'e '}${member.user.tag} :`)
@@ -24,11 +26,7 @@ module.exports = {
       .setImage(avatar(member, 'png', true))
       .setTimestamp()
       .setFooter(message.author.tag, message.author.displayAvatarURL({ dynamic: true }))
-      
+
     message.channel.send(embed);
   }
 };
-
-function avatar(member, format, bool) {
-  return member.user.displayAvatarURL({ size: 2048, format: format, dynamic: bool });
-}
