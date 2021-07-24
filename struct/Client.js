@@ -100,8 +100,14 @@ class KyofuClient extends Client {
   /**
    * Add a new guild to the database.
    * @param {Guild} guild The guild
-   * @param {Object} [options] The guild options
-   * @param {String} [options.prefix] The prefix of the guild
+   * @param {Object} options The guild options
+   * @param {String} options.prefix The prefix of the guild
+   * @param {Object} options.leave The leave system on the guild
+   * @param {?String} options.leave.channel The id of the leave system channel
+   * @param {?String} options.leave.message The leave system message
+   * @param {Object} options.join The join system on the guild
+   * @param {?String} options.join.channel The id of the join system channel
+   * @param {?String} options.join.message The join system message
    */
   async createGuild(guild, options) {
     const merged = Object.assign({ _id: mongoose.Types.ObjectId(), guildID: guild.id, guildName: guild.name }, options);
