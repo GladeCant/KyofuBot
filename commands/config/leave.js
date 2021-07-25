@@ -29,6 +29,7 @@ module.exports = {
 
       switch (args[0]) {
         case 'disable': {
+          if (!leave.channel && !leave.message) return message.inlineReply("<:unchecked:860839603098877953> • Le système de départ n'est pas activé !");
           await client.updateGuild(message.guild, {
             leave: { channel: null, message: null }
           });
