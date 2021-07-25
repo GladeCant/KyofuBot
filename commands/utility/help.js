@@ -15,7 +15,6 @@ module.exports = {
    */
   async execute(client, message, args) {
     const { commands } = client;
-    console.log(commands);
     const commandsList = {};
 
     if (!args.length) {
