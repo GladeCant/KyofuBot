@@ -1,18 +1,19 @@
 const mongoose = require('mongoose');
 const { Client, Collection, User, Guild, Message, GuildMember, Role } = require('discord.js');
 const MessageEmbed = require('./MessageEmbed');
-const helper = require('../util/helper.js');
+const helper = require('../util/helper');
 const { readdirSync } = require('fs');
 const fetch = require('node-fetch');
 const { defaultSettings, token } = require('../util/config');
-const _Guild = require('../models/guild.js');
-const Hate = require('../models/hate.js');
-const Item = require('../models/item.js');
-const Love = require('../models/love.js');
+const _Guild = require('../models/guild');
+const Hate = require('../models/hate');
+const Item = require('../models/item');
+const Todo = require('../models/todo')
+const Love = require('../models/love');
 const Member = require('../models/member.js');
-const Pnj = require('../models/pnj.js');
-const _User = require('../models/user.js');
-const Zone = require('../models/zone.js');
+const Pnj = require('../models/pnj');
+const _User = require('../models/user');
+const Zone = require('../models/zone');
 
 /**
  * Represents a Discord Client.
@@ -150,6 +151,19 @@ class KyofuClient extends Client {
     const merged = await Object.assign({ _id: mongoose.Types.ObjectId(), userID: member.id, userName: member.user.username, guildID: guild.id, guildName: guild.name }, options);
     const createMember = await new Member(merged);
     return await createMember.save();
+  }
+
+  /**
+   * Create a new todo list for a member.
+   * @param {User} user The user
+   * @param {Object} [options] The additional options
+   * @param {Array} [options.list] The todo list of the user
+   */
+  async createTodo(user, options = {}) {
+    const { list = [] } = options;
+    const merged = await Object.assign({ _id: mongoose.Types.ObjectId(), userID: user.id, userName: user.username, list: list });
+    const createTodo = await new Todo(merged);
+    return await createTodo.save();
   }
 
   /**
@@ -306,6 +320,15 @@ class KyofuClient extends Client {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  /**
+   * Find an user's todo list in the database.
+   * @param {User} user The user whose to find list
+   */
+  async getTodo(user) {
+    const data = await Todo.findOne({ userID: user.id });
+    return data;
   }
 
   /**
@@ -474,6 +497,19 @@ class KyofuClient extends Client {
    */
   async updateMember(member, guild, settings) {
     const data = await this.getMember(member, guild);
+    for (const key in settings) {
+      if (data[key] !== settings[key]) data[key] = settings[key];
+    }
+    return data.updateOne(settings);
+  }
+
+  /**
+   * Edit an user's todo list in the database.
+   * @param {User} user The user whose to edit todo list
+   * @param {Object} settings The new value to add to the list
+   */
+  async updateTodo(user, settings) {
+    const data = await this.getTodo(user);
     for (const key in settings) {
       if (data[key] !== settings[key]) data[key] = settings[key];
     }
