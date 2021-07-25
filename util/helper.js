@@ -81,7 +81,6 @@ module.exports = {
 
   replaceTags(message, member, guild) {
     if (typeof message === 'object') {
-
       let replaced = Object.entries(message);
       replaced.forEach(val => {
         if (typeof val[1] === 'string') {
@@ -97,7 +96,6 @@ module.exports = {
         }
       });
       replaced = Object.fromEntries(replaced);
-
       return replaced;
     }
     const replaced = message
