@@ -25,7 +25,6 @@ class ExtendedMessageEmbed extends MessageEmbed {
    * @returns {this}
    */
   setPotentialImage(condition, url) {
-    console.log(url)
     if (condition) return super.setImage(url);
     else return this;
   }
