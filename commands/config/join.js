@@ -30,6 +30,7 @@ module.exports = {
 
       switch (args[0]) {
         case 'disable': {
+          if (!join.channel && !join.message) return message.inlineReply("<:unchecked:860839603098877953> • Le système d'arrivée n'est pas activé !");
           await client.updateGuild(message.guild, {
             join: { channel: null, message: null }
           });
