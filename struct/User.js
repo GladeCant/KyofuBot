@@ -1,33 +1,34 @@
 const { Structures } = require('discord.js');
-const Client = require('./Client');
 
 /**
  * Represents a Discord User.
  */
 class User extends Structures.get('User') {
-  /**
-   * @param {Client} client 
-   * @param {Object} data 
-   */
-  constructor (client, data) {
-    super(client || {}, data || {});
-  }
-  
-  bannerURL(id, hash, options) {
-    
+  constructor(client, data) {
+    super(client, data);
+
+    (async () => {
+      console.log(data)
+      const user = await this.client.api.users(data.id).get();
+      return user;
+    })().then(user => {
+        /**
+         * The ID of the user's banner.
+         * @type {?String}
+         */
+        this.banner = user.banner;
+    });
   }
 
   /**
    * Display the user banner URL. If don't, return null.
    * @param {import("discord.js").ImageURLOptions} [options] Options for the image
-   * @returns {Promise<?string>}
+   * @returns {Promise<?String>}
    */
-  async displayBannerURL(options = {}) {
-    const user = await this.client.fetchUserAPI(this.id);
-    const banner = user.banner;
+  displayBannerURL(options = {}) {
     const { format = 'png', size = 4096, dynamic = false } = options;
     
-    if (banner) return `https://cdn.discordapp.com/banners/${this.id}/${banner}.${dynamic === true ? `${banner.startsWith('a_') ? 'gif' : 'png'}` : format}?size=${size}`;
+    if (this.banner) return `https://cdn.discordapp.com/banners/${this.id}/${this.banner}.${dynamic === true ? `${this.banner.startsWith('a_') ? 'gif' : format}` : format}?size=${size}`;
     else return null;
   }
 }
