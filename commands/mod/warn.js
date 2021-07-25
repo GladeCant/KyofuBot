@@ -33,9 +33,7 @@ module.exports = {
     memberWarns.push({
       reason: reason || 'Pas de raison spécifiée',
       by: message.author.id
-    })
-
-    console.log(mbr);
+    });
 
     await client.updateMember(member, message.guild, { warns: memberWarns });
     message.channel.send(`⚠️ • **${member.user.username}** a été averti par **${message.author.username}** ${reason ? `pour la raison \`${reason}\` !` : '!'}`);
