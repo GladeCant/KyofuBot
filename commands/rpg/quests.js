@@ -14,6 +14,6 @@ module.exports = {
    * @param {String[]} args 
    */
   execute(client, message, args) {
-    client.pnj('Vieux monsieur', 0, message);
+    client.rpg.pnj('Vieux monsieur', 0, message);
   }
 };

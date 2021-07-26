@@ -16,12 +16,12 @@ module.exports = {
   async execute(client, message, args) {
     const { prefix } = await client.getGuild(message.guild);
 
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (!user) return message.inlineReply(`<:unchecked:860839603098877953> • Vous n'avez pas commencé votre aventure !\nNe perdez pas de temps, faites la commande \`${prefix}startrpg\` !`);
 
     if (!args.length) return client.sendHelpPage(this.name, message);
 
-    await client.updateUser(message.author, { profile: { color: args[0] } });
+    await client.rpg.updateUser(message.author, { profile: { color: args[0] } });
 
     const embed = new MessageEmbed()
       .setColor(args[0] || `#${args[0]}`)

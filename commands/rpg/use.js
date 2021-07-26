@@ -16,12 +16,12 @@ module.exports = {
   async execute(client, message, args) {
     const { prefix } = await client.getGuild(message.guild);
 
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (!user) return message.inlineReply(`<:unchecked:860839603098877953> • Vous n'avez pas commencé votre aventure !\nNe perdez pas de temps, faites la commande \`${prefix}startrpg\` !`);
 
     if (!args.length) return client.sendHelpPage(this.name, message);
 
-    const item = await client.getItem(args.join(' '));
+    const item = await client.rpg.getItem(args.join(' '));
 
     if (!item) return message.inlineReply("<:unchecked:860839603098877953> • L'objet spécifié est invalide.");
     if (!user.items.includes(item.name)) return message.inlineReply('<:unchecked:860839603098877953> • Vous ne possédez pas cet objet.');
@@ -33,7 +33,7 @@ module.exports = {
     switch (item.name) {
       case '🍌 Banane': {
         await client.add
-        await client.addHP(message.author, 3);
+        await client.rpg.addHP(message.author, 3);
         msg = '🍌 • Vous mangez la **banane**. + 🧪 **3** !';
         break;
       }
@@ -47,7 +47,7 @@ module.exports = {
       }
     }
 
-    await client.updateUser(message.author, { items: userItems });
+    await client.rpg.updateUser(message.author, { items: userItems });
     message.channel.send(msg);
   }
 };

@@ -15,10 +15,10 @@ module.exports = {
    * @param {String[]} args
    */
   async execute(client, message, args, settings) {
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (user) return message.inlineReply('<:unchecked:860839603098877953> • Vous avez déjà commencé votre aventure.');
 
-    await client.createUser(message.author);
+    await client.rpg.createUser(message.author);
 
     const embed = new MessageEmbed()
       .setColor('#00ff3e')

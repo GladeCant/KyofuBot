@@ -17,10 +17,10 @@ module.exports = {
   async execute(client, message, args) {
     const { prefix } = await client.getGuild(message.guild);
 
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (!user) return message.inlineReply(`<:unchecked:860839603098877953> • Vous n'avez pas commencé votre aventure !\nNe perdez pas de temps, faites la commande \`${prefix}startrpg\` !`);
 
-    const zone = await client.getPosition(message.author);
+    const zone = await client.rpg.getPosition(message.author);
 
     const embed = new MessageEmbed()
       .setColor('bf9bec')

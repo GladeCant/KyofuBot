@@ -17,12 +17,12 @@ module.exports = {
   async execute(client, message, args) {
     const { prefix } = await client.getGuild(message.guild);
 
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (!user) return message.inlineReply(`<:unchecked:860839603098877953> • Vous n'avez pas commencé votre aventure !\nNe perdez pas de temps, faites la commande \`${prefix}startrpg\` !`);
 
     if (!args.length) return client.sendHelpPage(this.name, message);
 
-    const item = await client.getItem(args.join(' '));
+    const item = await client.rpg.getItem(args.join(' '));
     if (item == null) return message.inlineReply("<:unchecked:860839603098877953> • L'objet spécifié est invalide.");
 
     const embed = new MessageEmbed()

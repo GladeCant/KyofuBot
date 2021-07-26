@@ -17,7 +17,7 @@ module.exports = {
   async execute(client, message, args, settings) {
     const { prefix } = await client.getGuild(message.guild);
 
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (!user) return message.inlineReply("<:unchecked:860839603098877953> • Vous n'avez pas commencé commencé votre aventure. En toute logique, vous ne pouvez pas la supprimer.");
 
     message.inlineReply("⚠️ • **Attention !** Voulez-vous vraiment supprimer votre aventure ? Il n'y aura plus de retour en arrière.\nTapez `reset` pour confirmer ou `cancel` pour annuler.").then(async () => {
@@ -27,7 +27,7 @@ module.exports = {
 
       if (!proceed) return message.channel.send('Commande annulée.');
       else {
-        await client.deleteUser(message.author);
+        await client.rpg.deleteUser(message.author);
         message.channel.send(`<:checked:860839605015412776> • Données intégralement supprimées. Faites \`${prefix}startrpg\` pour recommencer une aventure.`);
       }
     });

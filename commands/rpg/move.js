@@ -16,17 +16,17 @@ module.exports = {
   async execute(client, message, args) {
     const { prefix } = await client.getGuild(message.guild);
 
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (!user) return message.inlineReply(`<:unchecked:860839603098877953> • Vous n'avez pas commencé votre aventure !\nNe perdez pas de temps, faites la commande \`${prefix}startrpg\` !`);
 
     if (!args.length) return client.sendHelpPage(this.name, message);
 
-    const currentPlace = await client.getPosition(message.author);
+    const currentPlace = await client.rpg.getPosition(message.author);
 
     const requestedPlace = args.join(' ');
     const movingPossibilities = currentPlace._doc.movingPossibilities;
 
-    if (await !client.getPosition(args.join(' '))) return message.inlineReply("<:unchecked:860839603098877953> • Cette zone n'existe pas.");
+    if (await !client.rpg.getPosition(args.join(' '))) return message.inlineReply("<:unchecked:860839603098877953> • Cette zone n'existe pas.");
 
     let msg = true;
 
@@ -35,7 +35,7 @@ module.exports = {
       const _place = movingPossibilities[i].replace(' (Bateau)', '');
       if (place === requestedPlace || place.substring(1) === requestedPlace || place.substring(2) === requestedPlace || movingPossibilities[i].substring(3) === requestedPlace || movingPossibilities[i].substring(4) === requestedPlace) {
         msg = false;
-        await client.updateUser(message.author, {
+        await client.rpg.updateUser(message.author, {
           position: place
         });
         message.channel.send(`<:checked:860839605015412776> • **${message.author.username}** se rend à **${place}** !`);
@@ -44,7 +44,7 @@ module.exports = {
       if ((place.endsWith('(Bateau)')) && (_place === requestedPlace || _place.substring(1) === requestedPlace || _place.substring(2) === requestedPlace || _place.substring(3) === requestedPlace || _place.substring(4) === requestedPlace)) {
         if (user.items.toObject().includes('⛵ Bateau')) {
           msg = false;
-          await client.updateUser(message.author, {
+          await client.rpg.updateUser(message.author, {
             position: _place
           });
           message.channel.send(`<:checked:860839605015412776> • **${message.author.username}** se rend à **${place.replace(' (Bateau)', '')}** en bateau ! ⛵`);

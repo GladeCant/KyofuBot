@@ -17,14 +17,14 @@ module.exports = {
   async execute(client, message, args) {
     const { prefix } = await client.getGuild(message.guild);
 
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (!user) return message.inlineReply(`<:unchecked:860839603098877953> • Vous n'avez pas commencé votre aventure !\nNe perdez pas de temps, faites la commande \`${prefix}startrpg\` !`);
 
-    const currentPosition = await client.getPosition(message.author);
+    const currentPosition = await client.rpg.getPosition(message.author);
 
     let itemsList = '';
     for (let i = 0; i != currentPosition.store.length; i++) {
-      const item = await client.getItem(currentPosition.store[i]);
+      const item = await client.rpg.getItem(currentPosition.store[i]);
       console.log(item);
       if (item.stock != 0) itemsList += `• ${item.name} [ <:po:860840271675654145> **${item.price}** ${item.receivedXP > 0 ? `- 🪁 **${item.receivedXP}**` : ''} ${item.stock != -1 ? `- 📦 **${item.stock}**` : ''} ${item.requiredLevel > 0 ? `- 👑 **${item.requiredLevel}**` : ''} ]\n*${item.description}*\n\n`;
     }

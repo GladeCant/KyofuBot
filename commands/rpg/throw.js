@@ -16,7 +16,7 @@ module.exports = {
   async execute(client, message, args) {
     const { prefix } = client.getGuild(message.guild);
 
-    const user = await client.getUser(message.author);
+    const user = await client.rpg.getUser(message.author);
     if (!user) return message.inlineReply(`<:unchecked:860839603098877953> • Vous n'avez pas commencé votre aventure !\nNe perdez pas de temps, faites la commande \`${prefix}startrpg\` !`);
 
     if (!args.length) return client.sendHelpPage(this.name, message);
@@ -28,7 +28,7 @@ module.exports = {
       quantity = 1;
     }
 
-    const item = await client.getItem(itemName);
+    const item = await client.rpg.getItem(itemName);
     if (!item) return message.inlineReply("<:unchecked:860839603098877953> • La quantité ou l'objet spécifié est invalide.");
 
     if (!user.items.includes(item.name)) return message.inlineReply('<:unchecked:860839603098877953> • Vous ne possédez pas cet objet.');
@@ -47,7 +47,7 @@ module.exports = {
       userItems.splice(userItems.indexOf(item.name), 1);
     }
 
-    await client.updateUser(message.author, { items: userItems });
+    await client.rpg.updateUser(message.author, { items: userItems });
 
     if (isNaN(quantity)) return message.inlineReply('<:unchecked:860839603098877953> • Quantité spécifiée invalide.');
     message.channel.send(`<:checked:860839605015412776> • **${message.author.username}** abandonne __${finalQuantity}__ **${item.name}${item.name.endsWith('e') && finalQuantity > 1 ? 's' : ''}**.`);
