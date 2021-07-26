@@ -14,7 +14,7 @@ module.exports = {
    * @param {String[]} args
    */
   async execute(client, message, args) {
-    if (!message.member.permissions.has('BAN_MEMBERS')) return message.inlineReply('<:unchecked:860839603098877953> • Vous ne possédez pas la permission de bannir des membres. (Requis : `Bannir des membres`.)');
+    if (!message.member.hasPermission('BAN_MEMBERS', { checkAdmin: true, checkOwner: true })) return message.inlineReply('<:unchecked:860839603098877953> • Vous ne possédez pas la permission de bannir des membres. (Requis : `Bannir des membres`.)');
 
     if (!args.length) return client.sendHelpPage(this.name, message);
 
