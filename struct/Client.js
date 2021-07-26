@@ -1,19 +1,16 @@
 const mongoose = require('mongoose');
-const { Client, Collection, User, Guild, Message, GuildMember, Role } = require('discord.js');
+const { Client, Collection, Guild, GuildMember, Message, Role, User } = require('discord.js');
 const MessageEmbed = require('./MessageEmbed');
+const Rpg = require('./Rpg');
 const helper = require('../util/helper');
 const { readdirSync } = require('fs');
 const fetch = require('node-fetch');
 const { defaultSettings, token } = require('../util/config');
 const _Guild = require('../models/guild');
 const Hate = require('../models/hate');
-const Item = require('../models/item');
 const Todo = require('../models/todo')
 const Love = require('../models/love');
-const Member = require('../models/member.js');
-const Pnj = require('../models/pnj');
-const _User = require('../models/user');
-const Zone = require('../models/zone');
+const Member = require('../models/member');
 
 /**
  * Represents a Discord Client.
@@ -34,6 +31,11 @@ class KyofuClient extends Client {
      * @type {helper}
      */
     this.helper = helper;
+
+    /**
+     * Methods about RPG.
+     */
+    this.rpg = new Rpg(this);
   }
 
   /**
@@ -66,36 +68,6 @@ class KyofuClient extends Client {
         if (folder === 'client') this.on(file.split('.')[0], event.bind(null, this));
       }
     }
-  }
-
-  /**
-   * Add HP to an user.
-   * @param {User} user The user to add HP
-   * @param {Number} hp The HP level
-   */
-  async addHP(user, hp) {
-    const _user = await this.getUser(user);
-    let hpLevel = _user.hp.level;
-
-    for (let i = 0; hp > i; i++) {
-      if (hpLevel < _user.hp.max) {
-        hpLevel++;
-        await this.updateUser(user, { hp: { level: hpLevel, max: _user.hp.max } });
-      } else break;
-    }
-  }
-
-  /**
-   * Define the level based on the number of experience points.
-   * @param {Number} xp The xp level
-   * @returns {Number[]}
-   */
-  calculateLevel(xp) {
-    const levelUser = Math.floor(0.25 * Math.sqrt(xp));
-    const pointsNextLevel = Math.pow((levelUser + 1) * 4, 2);
-    const requiredPoints = pointsNextLevel - xp;
-
-    return [levelUser, requiredPoints, pointsNextLevel];
   }
 
   /**
@@ -167,37 +139,6 @@ class KyofuClient extends Client {
   }
 
   /**
-   * Add a new user to the database.
-   * @param {User} user The user parameters
-   * @param {Object} [options] The additional options
-   * @param {Number} [options.xp] The user xp level
-   * @param {Object} [options.hp] The user hp parameters
-   * @param {Number} [options.hp.level] The user hp level
-   * @param {Number} [options.hp.max] The highest possible hp level attainable by the member
-   * @param {Number} [options.coins] The user coins
-   * @param {Array} [options.items] The user inventory
-   * @param {Object} [options.profile] The user profile parameters
-   * @param {String} [options.profile.color] The hex color of the member profile
-   * @param {String} [options.position] The member position on the map
-   * @param {Object} [options.quests] The member quests parameters
-   */
-  async createUser(user, options = {}) {
-    const { xp = 0, hp = { level: 20, max: 20 }, coins = 10, items = [], profile = { color: '#54abeb' }, position = '⚓ Port Isonvale', quests = [] } = options;
-    const merged = await Object.assign({ _id: mongoose.Types.ObjectId(), userID: user.id, userName: user.username, xp, hp, coins, items, profile, position, quests });
-    const createUser = await new _User(merged);
-    return await createUser.save();
-  }
-
-  /**
-   * Remove an user from the database.
-   * @param {User} user The user to remove
-   */
-  async deleteUser(user) {
-    if (!this.getUser(user)) return;
-    return await _User.deleteOne({ userID: user.id });
-  }
-
-  /**
    * Remove a guild from the database.
    * @param {Guild} guild The guild to remove
    */
@@ -255,15 +196,6 @@ class KyofuClient extends Client {
   }
 
   /**
-   * Find an item in the database.
-   * @param {String} name The item name
-   */
-  async getItem(name) {
-    const data = await Item.findOne({ name: { $regex: new RegExp(`${name}`, 'gi') || new RegExp(`${name}|:\\w*:`, 'gi') } });
-    return data;
-  }
-
-  /**
    * Find a love level between two users in the database.
    * @param {String} users The two users
    */
@@ -279,25 +211,6 @@ class KyofuClient extends Client {
    */
   async getMember(member, guild) {
     const data = await Member.findOne({ userID: member.id, guildID: guild.id });
-    return data;
-  }
-
-  /**
-   * Find a pnj in the database.
-   * @param {String} pnjName The pnj name
-   */
-  async getPnj(pnjName) {
-    const data = await Pnj.findOne({ name: pnjName });
-    return data;
-  }
-
-  /**
-   * Find the position of an user in the database.
-   * @param {User|String} userOrPosition The user or position
-   */
-  async getPosition(userOrPosition) {
-    const _user = await this.getUser(userOrPosition);
-    const data = await Zone.findOne({ name: _user ? _user.position : userOrPosition });
     return data;
   }
 
@@ -328,15 +241,6 @@ class KyofuClient extends Client {
    */
   async getTodo(user) {
     const data = await Todo.findOne({ userID: user.id });
-    return data;
-  }
-
-  /**
-   * Find an user in the database.
-   * @param {User} user The user to find
-   */
-  async getUser(user) {
-    const data = await _User.findOne({ userID: user.id });
     return data;
   }
 
@@ -396,9 +300,9 @@ class KyofuClient extends Client {
   detectMember(message, args) {
     const arg = args instanceof Array ? args.join(' ') : args;
 
-    let member = message.guild.members.cache.find(m => m.user.tag.toLowerCase() === arg.toLowerCase() || m.id === arg || [...arg].includes(m.id) || new RegExp(`<@!${m.id}>`).exec(arg) !== null || m.displayName.toLowerCase() === arg.toLowerCase() || m.user.username.toLowerCase() === arg.toLowerCase());
-    if (!member && (!args.length || arg.length < 4)) return null;
-    if (!member) member = message.guild.members.cache.find(m => m.user.username.toLowerCase().startsWith(arg.toLowerCase()) || m.user.username.toLowerCase().includes(arg.toLowerCase()) || m.user.username.toLowerCase().endsWith(arg.toLowerCase()) || m.displayName.toLowerCase().startsWith(arg.toLowerCase()) || m.displayName.toLowerCase().includes(arg.toLowerCase()) || m.displayName.toLowerCase().endsWith(arg.toLowerCase()));
+    console.log(message.guild.members.cache);
+    
+    const member = (message.guild.members.cache.find(m => m.user.tag.toLowerCase() === arg.toLowerCase() || m.id === arg || [...arg].includes(m.id) || new RegExp(`<@!${m.id}>`).exec(arg) !== null || m.displayName.toLowerCase() === arg.toLowerCase() || m.user.username.toLowerCase() === arg.toLowerCase())) || ((!args.length || arg.length < 4) ? null : message.guild.members.cache.find(m => m.user.username.toLowerCase().startsWith(arg.toLowerCase()) || m.user.username.toLowerCase().includes(arg.toLowerCase()) || m.user.username.toLowerCase().endsWith(arg.toLowerCase()) || m.displayName.toLowerCase().startsWith(arg.toLowerCase()) || m.displayName.toLowerCase().includes(arg.toLowerCase()) || m.displayName.toLowerCase().endsWith(arg.toLowerCase())));
     if (member) return member;
     else return null;
   }
@@ -412,9 +316,7 @@ class KyofuClient extends Client {
   detectRole(message, args) {
     const arg = args instanceof Array ? args.join(' ') : args;
 
-    let role = message.guild.roles.cache.find(r => r.id === arg || [...arg].includes(r.id) || new RegExp(`<@&${r.id}>`).exec(arg) !== null || r.name.toLowerCase() === arg.toLowerCase());
-    if (!role && (!args.length || arg.length < 4)) return null;
-    if (!role) role = message.guild.roles.cache.find(r => r.name.toLowerCase().startsWith(arg.toLowerCase()) || r.name.toLowerCase().includes(arg.toLowerCase()) || r.name.toLowerCase().endsWith(arg.toLowerCase()));
+    const role = (message.guild.roles.cache.find(r => r.id === arg || [...arg].includes(r.id) || new RegExp(`<@&${r.id}>`).exec(arg) !== null || r.name.toLowerCase() === arg.toLowerCase()) || (!args.length || arg.length < 4) ? null : message.guild.roles.cache.find(r => r.name.toLowerCase().startsWith(arg.toLowerCase()) || r.name.toLowerCase().includes(arg.toLowerCase()) || r.name.toLowerCase().endsWith(arg.toLowerCase())));
     if (role) return role;
     else return null;
   }
@@ -428,9 +330,7 @@ class KyofuClient extends Client {
   detectUser(message, args) {
     const arg = args instanceof Array ? args.join(' ') : args;
 
-    let user = this.users.cache.find(u => u.tag.toLowerCase() === arg.toLowerCase() || u.id === arg || [...arg].includes(u.id) || new RegExp(`<@!?${u.id}>`).exec(arg) !== null || u.username.toLowerCase() === arg.toLowerCase());
-    if (!user && (!args.length || arg.length < 4)) return null;
-    if (!user) user = this.users.cache.find(u => u.username.toLowerCase().startsWith(arg.toLowerCase()) || u.username.toLowerCase().includes(arg.toLowerCase()) || u.username.toLowerCase().endsWith(arg.toLowerCase()));
+    const user = (this.users.cache.find(u => u.tag.toLowerCase() === arg.toLowerCase() || u.id === arg || [...arg].includes(u.id) || new RegExp(`<@!?${u.id}>`).exec(arg) !== null || u.username.toLowerCase() === arg.toLowerCase()) || (!args.length || arg.length < 4) ? null : this.users.cache.find(u => u.username.toLowerCase().startsWith(arg.toLowerCase()) || u.username.toLowerCase().includes(arg.toLowerCase()) || u.username.toLowerCase().endsWith(arg.toLowerCase())));
     if (user) return user;
     else return null;
   }
@@ -446,43 +346,12 @@ class KyofuClient extends Client {
   }
 
   /**
-   * Send a dialog box of a pnj.
-   * @param {String} pnjName The pnj name
-   * @param {Number} n The number of the dialog box
-   * @param {Message} message The sent message
-   */
-  async pnj(pnjName, n, message) {
-    const pnj = await this.getPnj(pnjName);
-
-    const embed = new MessageEmbed()
-      .setColor(pnj.color)
-      .setTitle(pnj.name)
-      .setDescription(`─ ${pnj.dialogs[n]}`)
-      .setThumbnail(pnj.img)
-
-    return message.channel.send(embed);
-  }
-
-  /**
    * Edit parameters of a guild in the database.
    * @param {Guild} guild The guild to edit
    * @param {Object} settings The new value(s) for the guild
    */
   async updateGuild(guild, settings) {
     const data = await this.getGuild(guild);
-    for (const key in settings) {
-      if (data[key] !== settings[key]) data[key] = settings[key];
-    }
-    return data.updateOne(settings);
-  }
-
-  /**
-   * Edit parameters of an item in the database.
-   * @param {Stirng} name The item name
-   * @param {Object} settings The new value(s) for the item
-   */
-  async updateItem(name, settings) {
-    const data = await this.getItem(name);
     for (const key in settings) {
       if (data[key] !== settings[key]) data[key] = settings[key];
     }
@@ -510,19 +379,6 @@ class KyofuClient extends Client {
    */
   async updateTodo(user, settings) {
     const data = await this.getTodo(user);
-    for (const key in settings) {
-      if (data[key] !== settings[key]) data[key] = settings[key];
-    }
-    return data.updateOne(settings);
-  }
-
-  /**
-   * Edit parameters of an user in the database.
-   * @param {User} user The user to edit
-   * @param {Object} settings The new value(s) for the user
-   */
-  async updateUser(user, settings) {
-    const data = await this.getUser(user);
     for (const key in settings) {
       if (data[key] !== settings[key]) data[key] = settings[key];
     }
