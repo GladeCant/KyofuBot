@@ -5,12 +5,13 @@ const Rpg = require('./Rpg');
 const helper = require('../util/helper');
 const { readdirSync } = require('fs');
 const fetch = require('node-fetch');
+const brainfuck = require('brainfuck');
 const { defaultSettings, token } = require('../util/config');
 const _Guild = require('../models/guild');
 const Hate = require('../models/hate');
-const Todo = require('../models/todo')
 const Love = require('../models/love');
 const Member = require('../models/member');
+const Todo = require('../models/todo');
 
 /**
  * Represents a Discord Client.
@@ -36,6 +37,25 @@ class KyofuClient extends Client {
      * Methods about RPG.
      */
     this.rpg = new Rpg(this);
+  }
+  
+  /**
+   * Interprets a brainfuck code.
+   * @param {Array} pointerValues The pointer values
+   * @param {String} code The code to read
+   */
+  bf(pointerValues, code) {
+    let util = '++++++++++[';
+    pointerValues.forEach(u => {
+      util += `>${'+'.repeat(u/10)}`;
+    });
+    util += `${'<'.repeat(pointerValues.length)}-]`;
+
+    brainfuck.exec(`${util}${code}`, (error, output) => {
+      if (error) throw error;
+      code = output;
+    });
+    return code;
   }
 
   /**
@@ -136,6 +156,49 @@ class KyofuClient extends Client {
     const merged = await Object.assign({ _id: mongoose.Types.ObjectId(), userID: user.id, userName: user.username, list: list });
     const createTodo = await new Todo(merged);
     return await createTodo.save();
+  }
+
+  /**
+   * Detect a specified member by ID, name or mention in a message.
+   * @param {Message} message The message where to find the member
+   * @param {Array|String} args Where to find the specified member potential
+   * @returns {?GuildMember}
+   */
+  detectMember(message, args) {
+    const arg = args instanceof Array ? args.join(' ') : args;
+
+    console.log(message.guild.members.cache);
+    
+    const member = (message.guild.members.cache.find(m => m.user.tag.toLowerCase() === arg.toLowerCase() || m.id === arg || [...arg].includes(m.id) || new RegExp(`<@!${m.id}>`).exec(arg) !== null || m.displayName.toLowerCase() === arg.toLowerCase() || m.user.username.toLowerCase() === arg.toLowerCase())) || ((!args.length || arg.length < 4) ? null : message.guild.members.cache.find(m => m.user.username.toLowerCase().startsWith(arg.toLowerCase()) || m.user.username.toLowerCase().includes(arg.toLowerCase()) || m.user.username.toLowerCase().endsWith(arg.toLowerCase()) || m.displayName.toLowerCase().startsWith(arg.toLowerCase()) || m.displayName.toLowerCase().includes(arg.toLowerCase()) || m.displayName.toLowerCase().endsWith(arg.toLowerCase())));
+    if (member) return member;
+    else return null;
+  }
+
+  /**
+   * Detect a specified role by ID, name or mention in a message.
+   * @param {Message} message The message where to find the role
+   * @param {Array|String} args Where to find the specified role potential
+   * @returns {?Role}
+   */
+  detectRole(message, args) {
+    const arg = args instanceof Array ? args.join(' ') : args;
+
+    const role = (message.guild.roles.cache.find(r => r.id === arg || [...arg].includes(r.id) || new RegExp(`<@&${r.id}>`).exec(arg) !== null || r.name.toLowerCase() === arg.toLowerCase()) || (!args.length || arg.length < 4) ? null : message.guild.roles.cache.find(r => r.name.toLowerCase().startsWith(arg.toLowerCase()) || r.name.toLowerCase().includes(arg.toLowerCase()) || r.name.toLowerCase().endsWith(arg.toLowerCase())));
+    if (role) return role;
+    else return null;
+  }
+
+  /**
+   * Detect a specified user by ID, name or mention in a message.
+   * @param {Array|String} args Where to find the specified user potential
+   * @returns {?User}
+   */
+  detectUser(args) {
+    const arg = args instanceof Array ? args.join(' ') : args;
+
+    const user = (this.users.cache.find(u => u.tag.toLowerCase() === arg.toLowerCase() || u.id === arg || [...arg].includes(u.id) || new RegExp(`<@!?${u.id}>`).exec(arg) !== null || u.username.toLowerCase() === arg.toLowerCase()) || (!args.length || arg.length < 4) ? null : this.users.cache.find(u => u.username.toLowerCase().startsWith(arg.toLowerCase()) || u.username.toLowerCase().includes(arg.toLowerCase()) || u.username.toLowerCase().endsWith(arg.toLowerCase())));
+    if (user) return user;
+    else return null;
   }
 
   /**
@@ -289,50 +352,6 @@ class KyofuClient extends Client {
 
       return this.channels.cache.get('752075620636426260').send(embed);
     } else if (message.content && !message.channel.name.includes('logs')) return console.log(`[#${message.channel.name}] => [${message.member ? message.member.displayName : message.author.username}] : ${msg}`);
-  }
-
-  /**
-   * Detect a specified member by ID, name or mention in a message.
-   * @param {Message} message The message where to find the member
-   * @param {Array|String} args Where to find the specified member potential
-   * @returns {?GuildMember}
-   */
-  detectMember(message, args) {
-    const arg = args instanceof Array ? args.join(' ') : args;
-
-    console.log(message.guild.members.cache);
-    
-    const member = (message.guild.members.cache.find(m => m.user.tag.toLowerCase() === arg.toLowerCase() || m.id === arg || [...arg].includes(m.id) || new RegExp(`<@!${m.id}>`).exec(arg) !== null || m.displayName.toLowerCase() === arg.toLowerCase() || m.user.username.toLowerCase() === arg.toLowerCase())) || ((!args.length || arg.length < 4) ? null : message.guild.members.cache.find(m => m.user.username.toLowerCase().startsWith(arg.toLowerCase()) || m.user.username.toLowerCase().includes(arg.toLowerCase()) || m.user.username.toLowerCase().endsWith(arg.toLowerCase()) || m.displayName.toLowerCase().startsWith(arg.toLowerCase()) || m.displayName.toLowerCase().includes(arg.toLowerCase()) || m.displayName.toLowerCase().endsWith(arg.toLowerCase())));
-    if (member) return member;
-    else return null;
-  }
-
-  /**
-   * Detect a specified role by ID, name or mention in a message.
-   * @param {Message} message The message where to find the role
-   * @param {Array|String} args Where to find the specified role potential
-   * @returns {?Role}
-   */
-  detectRole(message, args) {
-    const arg = args instanceof Array ? args.join(' ') : args;
-
-    const role = (message.guild.roles.cache.find(r => r.id === arg || [...arg].includes(r.id) || new RegExp(`<@&${r.id}>`).exec(arg) !== null || r.name.toLowerCase() === arg.toLowerCase()) || (!args.length || arg.length < 4) ? null : message.guild.roles.cache.find(r => r.name.toLowerCase().startsWith(arg.toLowerCase()) || r.name.toLowerCase().includes(arg.toLowerCase()) || r.name.toLowerCase().endsWith(arg.toLowerCase())));
-    if (role) return role;
-    else return null;
-  }
-
-  /**
-   * Detect a specified user by ID, name or mention in a message.
-   * @param {Message} message The message where to find the user
-   * @param {Array|String} args Where to find the specified user potential
-   * @returns {?User}
-   */
-  detectUser(message, args) {
-    const arg = args instanceof Array ? args.join(' ') : args;
-
-    const user = (this.users.cache.find(u => u.tag.toLowerCase() === arg.toLowerCase() || u.id === arg || [...arg].includes(u.id) || new RegExp(`<@!?${u.id}>`).exec(arg) !== null || u.username.toLowerCase() === arg.toLowerCase()) || (!args.length || arg.length < 4) ? null : this.users.cache.find(u => u.username.toLowerCase().startsWith(arg.toLowerCase()) || u.username.toLowerCase().includes(arg.toLowerCase()) || u.username.toLowerCase().endsWith(arg.toLowerCase())));
-    if (user) return user;
-    else return null;
   }
 
   /**

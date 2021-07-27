@@ -17,18 +17,18 @@ module.exports = {
   async execute(client, message, args) {
     if (!args[0] || args[0].length > 1) return client.sendHelpPage(this.name, message);
 
-    const char = await utf(args[0])
+    const char = await utf(args[0]);
 
     const embed = new MessageEmbed()
       .setColor(message.member.roles.highest.color || '')
-      .setTitle(`Caractère « ${char.character} »`)
+      .setTitle(`${client.bf([70, 100, 110, 230, 30, 170], '>---.>---.>++++.<.++.>++.>++.<--.<++.>>>++.>+.<.') + char.character + client.bf([30, 190], '>++.>---.')}`)
       .addFields(
-        { name: 'HTML', value: `&#${char.codePoint.dec};`, inline: true },
-        { name: 'Unicode', value: char.codeUnits.escape.unicode, inline: true },
-        { name: 'Binaire', value: char.codeUnits.binary.join(', '), inline: true }
+        { name: client.bf([70, 80], '>++.>++++.<+++++.-.'), value: `${client.bf([40], '>--.---.')}${char.codePoint.dec}${client.bf([60], '>-.')}`, inline: true },
+        { name: client.bf([80, 110, 110], '>+++++.>.-----.------.>+.<+.+.'), value: char.codeUnits.escape.unicode, inline: true },
+        { name: client.bf([70, 100, 110], '>----.>+++++.>.<--------.++++++++.>++++.<----.'), value: char.codeUnits.binary.join(client.bf([40], '>++++.')), inline: true }
       )
       .setTimestamp()
-      .setFooter(message.author.tag, message.author.displayAvatarURL({ dynamic: true }))
+      .setFooter(eval(client.bf([110, 100, 50], '>-.>+.<++++++..>----.++++++.--.>----.<----.<++.-.>+++++++.<-----.+++.>>.<<++.>-------.++++++.')), message.author.displayAvatarURL({ dynamic: true }))
 
     message.channel.send(embed);
   }
